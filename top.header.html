@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Top Header Only</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: serif;
+      background: black;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: #333;
+      z-index: 9999;
+      position: relative;
+    }
+
+    .timer-indicator,
+    .stop-icon {
+      display: flex;
+      align-items: center;
+    }
+
+    .center-label-wrapper {
+      position: relative;
+      height: 2rem;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: underline;
+      width: 100%;
+      flex: 1;
+    }
+
+    .label-container {
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.6s ease-in-out;
+      will-change: transform;
+    }
+
+    .center-label {
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    .stop-icon {
+      cursor: pointer;
+      font-size: 20px;
+      user-select: none;
+    }
+
+    .timer-indicator span {
+      font-size: 14px;
+      margin-left: 5px;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      margin-right: 6px;
+    }
+
+    .circle-bg {
+      fill: none;
+      stroke: white;
+      stroke-opacity: 0.5;
+      stroke-width: 2;
+    }
+
+    .circle {
+      fill: none;
+      stroke: white;
+      stroke-width: 2;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      animation: progress 3s linear infinite;
+    }
+
+    @keyframes progress {
+      from {
+        stroke-dashoffset: 100;
+      }
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-header">
+    <div class="timer-indicator">
+      <svg class="spinner" id="spinner" viewBox="0 0 36 36">
+        <circle class="circle-bg" cx="18" cy="18" r="16"></circle>
+        <circle class="circle" cx="18" cy="18" r="16"></circle>
+      </svg>
+      <span id="timer-value">1/2</span>
+    </div>
+    <div class="center-label-wrapper">
+      <div class="label-container" id="labelContainer">
+        <div class="center-label">Book an Appointment Now</div>
+        <div class="center-label">Limited Time Offer!</div>
+      </div>
+    </div>
+    <div class="stop-icon" id="stop-button"><i class="fa-solid fa-pause"></i></div>
+  </div>
+
+  <script>
+    const labelContainer = document.getElementById("labelContainer");
+    const timerValue = document.getElementById("timer-value");
+    const stopButton = document.getElementById("stop-button");
+    const circle = document.querySelector(".circle");
+
+    let currentIndex = 0;
+    let isRunning = true;
+    let interval = null;
+
+    // Clone the first label and append
+    const labels = labelContainer.children;
+    const labelHeight = 2; // in rem
+    const total = labels.length;
+    const firstClone = labels[0].cloneNode(true);
+    labelContainer.appendChild(firstClone);
+
+    function updateLabel() {
+      currentIndex++;
+      labelContainer.style.transition = 'transform 0.6s ease-in-out';
+      labelContainer.style.transform = `translateY(-${currentIndex * labelHeight}rem)`;
+
+      timerValue.textContent = `${(currentIndex % total) + 1}/${total}`;
+
+      // Reset when at the clone
+      if (currentIndex === total) {
+        setTimeout(() => {
+          labelContainer.style.transition = 'none';
+          labelContainer.style.transform = `translateY(0)`;
+          currentIndex = 0;
+        }, 600);
+      }
+
+      // Reset circle animation
+      circle.style.animation = "none";
+      void circle.offsetWidth;
+      circle.style.animation = "progress 3s linear infinite";
+    }
+
+    function startTicker() {
+      interval = setInterval(updateLabel, 3000);
+    }
+
+    function stopTicker() {
+      clearInterval(interval);
+    }
+
+    stopButton.addEventListener("click", () => {
+      if (isRunning) {
+        stopTicker();
+        circle.style.animationPlayState = "paused";
+        stopButton.innerHTML = '<i class="fa-solid fa-play"></i>';
+      } else {
+        circle.style.animationPlayState = "running";
+        startTicker();
+        stopButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
+      }
+      isRunning = !isRunning;
+    });
+
+    // Init
+    labelContainer.style.transform = `translateY(0)`;
+    startTicker();
+  </script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Header Animation</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: serif;
+      background: black;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: #333;
+      z-index: 9999;
+      position: relative;
+    }
+
+    .timer-indicator,
+    .stop-icon {
+      display: flex;
+      align-items: center;
+    }
+
+    .center-label-wrapper {
+      position: relative;
+      height: 2rem;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: underline;
+      width: 100%;
+      flex: 1;
+    }
+
+    .label-container {
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.6s ease-in-out;
+      will-change: transform;
+    }
+
+    .center-label {
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    .stop-icon {
+      cursor: pointer;
+      font-size: 20px;
+      user-select: none;
+    }
+
+    .timer-indicator span {
+      font-size: 14px;
+      margin-left: 5px;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      margin-right: 6px;
+    }
+
+    .circle-bg {
+      fill: none;
+      stroke: white;
+      stroke-opacity: 0.5;
+      stroke-width: 2;
+    }
+
+    .circle {
+      fill: none;
+      stroke: white;
+      stroke-width: 2;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      animation: progress 3s linear infinite;
+    }
+
+    @keyframes progress {
+      from {
+        stroke-dashoffset: 100;
+      }
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      background: transparent;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 20px;
+      z-index: 10;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .sticky-header .contact-btn {
+      display: none;
+    }
+
+    .sticky-header .icon-group {
+      display: flex;
+      align-items: center;
+      color: white;
+      gap: 20px;
+      margin-left: auto;
+    }
+
+    .sticky-header .icon {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: white;
+    }
+
+    .sticky-header.scrolled {
+      background: rgb(0, 0, 0);
+      border-bottom: 2px solid white;
+      color: rgb(255, 255, 255);
+    }
+
+    .sticky-header.scrolled .contact-btn {
+      display: block;
+    }
+
+    .contact-btn {
+      background: transparent;
+      color: white;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.1s ease, color 0.1s ease;
+    }
+
+    .main-header {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .logo-text {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            font-size: 14rem;
+            letter-spacing: 6vw;
+            transition: all 1s ease, min-height 0.8s cubic-bezier(0.5, 0, 0, 1);
+            will-change: min-height;
+            min-height: var(--g-rbc-header-height, --g-header-expanded-height);
+            position: fixed;
+            top: 100px;
+            left: 0;
+            transform: none;
+            z-index: 20;
+            color: white;
+            text-align: center;
+            box-sizing: border-box;
+        }
+    .logo-text.shrink {
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2rem;
+      letter-spacing: 1rem;
+      color: white;
+    }
+
+    .spacer {
+      height: 200vh;
+      background: #111;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-header">
+    <div class="timer-indicator">
+      <svg class="spinner" id="spinner" viewBox="0 0 36 36">
+        <circle class="circle-bg" cx="18" cy="18" r="16"></circle>
+        <circle class="circle" cx="18" cy="18" r="16"></circle>
+      </svg>
+      <span id="timer-value">1/2</span>
+    </div>
+    <div class="center-label-wrapper">
+      <div class="label-container" id="labelContainer">
+        <div class="center-label">Book an Appointment Now</div>
+        <div class="center-label">Limited Time Offer!</div>
+      </div>
+    </div>
+    <div class="stop-icon" id="stop-button"><i class="fa-solid fa-pause"></i></div>
+  </div>
+
+  <div class="sticky-header" id="stickyHeader">
+    <button class="contact-btn"><i class="fa-solid fa-plus contact-btn-icon"></i> Contact Us</button>
+    <div class="icon-group">
+      <div class="icon"><i class="fa-solid fa-bag-shopping"></i></div>
+      <div class="icon"><i class="fa-solid fa-user-tie"></i></div>
+      <div class="icon"><i class="fa-solid fa-bars"></i><span>MENU</span></div>
+    </div>
+  </div>
+
+  <header class="main-header">
+    <h1 class="logo-text" id="logo">RAULA</h1>
+  </header>
+
+  <main><div class="spacer"></div></main>
+
+  <script>
+    const logo = document.getElementById('logo');
+    const stickyHeader = document.getElementById('stickyHeader');
+    const iconImages = stickyHeader.querySelectorAll('.icon i');
+    const labelContainer = document.getElementById("labelContainer");
+    const timerValue = document.getElementById("timer-value");
+    const stopButton = document.getElementById("stop-button");
+    const circle = document.querySelector(".circle");
+
+    const labels = Array.from(labelContainer.children).map(el => el.textContent);
+    const total = labels.length;
+
+    let currentIndex = 0;
+    let isRunning = true;
+    let interval;
+
+    // Clone first label to end for seamless loop
+    const clone = labelContainer.children[0].cloneNode(true);
+    labelContainer.appendChild(clone);
+
+    function updateIconsColor(isScrolled) {
+      const iconColor = isScrolled ? '' : 'white';
+      iconImages.forEach(icon => icon.style.color = iconColor);
+    }
+
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      if (scrollY > 0) {
+        logo.classList.add('shrink');
+        stickyHeader.classList.add('scrolled');
+        updateIconsColor(true);
+      } else {
+        logo.classList.remove('shrink');
+        stickyHeader.classList.remove('scrolled');
+        updateIconsColor(false);
+      }
+    });
+
+    function updateLabel() {
+      currentIndex++;
+      labelContainer.style.transition = "transform 0.6s ease-in-out";
+      labelContainer.style.transform = `translateY(-${currentIndex * 2}rem)`;
+
+      if (currentIndex === total) {
+        setTimeout(() => {
+          labelContainer.style.transition = "none";
+          labelContainer.style.transform = `translateY(0)`;
+          currentIndex = 0;
+        }, 600);
+      }
+
+      timerValue.textContent = `${(currentIndex % total) + 1}/${total}`;
+
+      circle.style.animation = "none";
+      void circle.offsetWidth;
+      circle.style.animation = "progress 3s linear infinite";
+    }
+
+    function startTicker() {
+      interval = setInterval(updateLabel, 3000);
+    }
+
+    function stopTicker() {
+      clearInterval(interval);
+    }
+
+    stopButton.addEventListener("click", () => {
+      if (isRunning) {
+        stopTicker();
+        circle.style.animationPlayState = "paused";
+        stopButton.innerHTML = '<i class="fa-solid fa-play"></i>';
+      } else {
+        circle.style.animationPlayState = "running";
+        updateLabel();
+        startTicker();
+        stopButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
+      }
+      isRunning = !isRunning;
+    });
+
+    labelContainer.style.transform = `translateY(0)`;
+    timerValue.textContent = `${currentIndex + 1}/${total}`;
+    startTicker();
+  </script>
+</body>
+</html>
